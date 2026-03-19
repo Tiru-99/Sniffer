@@ -1,15 +1,60 @@
-# scanner
+# sniffer
 
-To install dependencies:
+A simple CLI tool to scan your package.json and flag suspicious dependencies before you install or run a project.
 
-```bash
-bun install
-```
+## Why sniffer?
 
-To run:
+Most developers install dependencies without thinking twice. Attackers are now using fake repositories, job interview assignments, and social engineering to introduce malicious or suspicious packages. sniffer helps you review dependencies before executing a project.
 
-```bash
-bun run index.ts
-```
+## Features
 
-This project was created using `bun init` in bun v1.3.0. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+- Scans dependencies and devDependencies  
+- Flags low-trust packages (low downloads or few maintainers)  
+- Detects unusual or unnecessary packages  
+- Lightweight and fast  
+
+## Installation
+
+npm install -g sniffer
+
+or
+
+npx sniffer scan
+
+## Usage
+
+sniffer scan
+
+## Example Output
+
+Scanning dependencies...
+
+Suspicious packages detected — please review them before proceeding.
+
+1. lodas@1.0.0  
+   - Downloads: 42  
+   - Maintainers: 1  
+
+2. fs@0.0.1-security  
+   - Built-in module — no need to install  
+
+## Commands
+
+sniffer scan     scan dependencies  
+sniffer help     show help  
+
+## How it works
+
+sniffer checks weekly downloads, maintainer count, and unusual or unnecessary packages. It does not replace npm audit. It highlights packages that may require manual review.
+
+## Disclaimer
+
+sniffer does not guarantee that a package is malicious. It highlights packages that may require closer inspection. Always verify dependencies before installing them.
+
+## Contributing
+
+Contributions are welcome.
+
+## License
+
+MIT
