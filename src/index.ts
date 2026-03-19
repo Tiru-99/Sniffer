@@ -34,11 +34,11 @@ const main = async () => {
 
     console.log(`
 Usage:
-  pkg-sniffer scan      Scan dependencies
-  pkg-sniffer help      Show help
+  pkg-sniffer-cli scan      Scan dependencies
+  pkg-sniffer-cli help      Show help
 
 Example:
-  pkg-sniffer scan
+  pkg-sniffer-cli scan
     `);
 
   } else {
