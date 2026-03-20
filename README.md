@@ -15,15 +15,15 @@ Most developers install dependencies without thinking twice. Attackers are now u
 
 ## Installation
 
-npm install -g sniffer
+npm install -g pkg-sniffer-cli
 
 or
 
-npx sniffer scan
+npx pkg-sniffer-cli
 
 ## Usage
 
-sniffer scan
+pkg-sniffer-cli scan
 
 ## Example Output
 
@@ -40,8 +40,8 @@ Suspicious packages detected — please review them before proceeding.
 
 ## Commands
 
-sniffer scan     scan dependencies  
-sniffer help     show help  
+pkg-sniffer-cli scan      scan dependencies  
+pkg-sniffer-cli help      show help  
 
 ## How it works
 
