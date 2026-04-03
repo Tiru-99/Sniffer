@@ -24,7 +24,6 @@ const main = async () => {
     try {
       let newFile = fileContent 
       json = JSON.parse(newFile) ; 
-      console.log("the json is " , json)
     } catch (err) {
       console.log("❌ Invalid package.json format");
       return;
