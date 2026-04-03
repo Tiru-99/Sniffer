@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "depscan": "bun run src/index.ts",
+    "sniffer": "bun run src/index.ts",
     "build": "tsc"
   },
   "devDependencies": {

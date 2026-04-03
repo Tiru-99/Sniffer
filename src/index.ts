@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env bun 
 import { getPackageJsonFile } from "./utils/getPackageJsonFile";
 import { scanPackageJson } from "./core"; 
 
@@ -22,7 +22,9 @@ const main = async () => {
     let json;
 
     try {
-      json = JSON.parse(fileContent);
+      let newFile = fileContent 
+      json = JSON.parse(newFile) ; 
+      console.log("the json is " , json)
     } catch (err) {
       console.log("❌ Invalid package.json format");
       return;
@@ -48,4 +50,15 @@ Example:
   }
 };
 
+process.on("SIGINT", () => {
+  console.log("\n🛑 Ctrl+C detected. Exiting...");
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  console.log("\n🛑 Termination signal. Exiting...");
+  process.exit(0);
+});
+
 main();
+ 

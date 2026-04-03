@@ -1,39 +1,25 @@
 import axios from "axios";
-import ora from "ora";
-
-type PackageJson = {
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-};
-
-type ScanResult = {
-  name: string;
-  version: string;
-  maintainers?: number;
-  downloads?: number;
-  error?: boolean;
-  type?: "SUSPICIOUS" | "WARNING" | "SAFE";
-  reason?: string;
-};
-
+import type { PackageJson, ScanResult } from "./types"; 
+import { throttleRequests } from "./utils/throttle"; 
+import { withTimeout } from "./utils/timeout";
 
 export const scanPackageJson = async (fileContent: PackageJson) => {
-  const spinner = ora("🔍 Scanning dependencies...").start();
+  console.log("Scanning Dependencies..."); 
 
   const allDeps = {
     ...fileContent.dependencies,
-    ...fileContent.devDependencies
+    ...fileContent.devDependencies,
   };
 
   try {
-    const results = await Promise.all(
-      Object.entries(allDeps).map(([name, version]) =>
-        scanOnePackage(name, version)
-      )
-    );
+    const results = await withTimeout( 
+      throttleRequests(allDeps) , 
+      60000 , 
+      "Timeout Expired"
+    ); 
 
-    spinner.succeed("Scan completed");
-
+    console.log("\n✅ Scan completed");
+    
     const flagged = results.filter((pkg) => pkg.type !== "SAFE");
 
     console.log("\n🔍 Scan Results:\n");
@@ -44,7 +30,7 @@ export const scanPackageJson = async (fileContent: PackageJson) => {
     }
 
     console.log(
-      "⚠️ Suspicious packages detected — please review them before proceeding.\n"
+      "⚠️ Suspicious packages detected — please review them before proceeding.\n",
     );
 
     flagged.forEach((pkg, i) => {
@@ -52,7 +38,7 @@ export const scanPackageJson = async (fileContent: PackageJson) => {
 
       if (pkg.error) {
         console.log(
-          "   - Failed to fetch package info — be careful before using this package"
+          "   - Failed to fetch package info — be careful before using this package",
         );
       } else {
         console.log(`   - Downloads: ${pkg.downloads}`);
@@ -66,14 +52,14 @@ export const scanPackageJson = async (fileContent: PackageJson) => {
       console.log("");
     });
   } catch (err) {
-    spinner.fail("Scan failed");
+    console.log("❌ Scan failed");
     console.error(err);
   }
 };
 
 export const scanOnePackage = async (
   name: string,
-  version: string
+  version: string,
 ): Promise<ScanResult> => {
   try {
     // security placeholder
@@ -82,14 +68,13 @@ export const scanOnePackage = async (
         name,
         version,
         type: "WARNING",
-        reason: "Security placeholder package — not meant for use"
+        reason: "Security placeholder package — not meant fojkr use",
       };
     }
 
-    const [metaRes, downloadRes] = await Promise.all([
-      axios.get(`https://registry.npmjs.org/${name}/latest`),
-      axios.get(`https://api.npmjs.org/downloads/point/last-week/${name}`)
-    ]);
+    const metaRes = await axios.get(`https://registry.npmjs.org/${name}`);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const downloadRes = await axios.get(`https://api.npmjs.org/downloads/point/last-week/${name}`);
 
     const maintainers = metaRes.data.maintainers?.length || 0;
     const downloads = downloadRes.data.downloads || 0;
@@ -104,7 +89,7 @@ export const scanOnePackage = async (
         maintainers,
         downloads,
         type: "SUSPICIOUS",
-        reason: "Low trust signals (low downloads / few maintainers)"
+        reason: "Low trust signals (low downloads / few maintainers)",
       };
     }
 
@@ -113,15 +98,16 @@ export const scanOnePackage = async (
       version,
       maintainers,
       downloads,
-      type: "SAFE"
+      type: "SAFE",
     };
   } catch (err) {
+    console.log("The error is ", err);
     return {
       name,
       version,
       error: true,
       type: "SUSPICIOUS",
-      reason: "Failed to fetch package data"
+      reason: "Failed to fetch package data",
     };
   }
 };
