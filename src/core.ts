@@ -1,4 +1,3 @@
-import axios from "axios";
 import type { PackageJson, ScanResult } from "./types"; 
 import { throttleRequests } from "./utils/throttle"; 
 import { withTimeout } from "./utils/timeout";
@@ -71,17 +70,23 @@ export const scanOnePackage = async (
         reason: "Security placeholder package — not meant fojkr use",
       };
     }
-
-    const metaRes = await axios.get(`https://registry.npmjs.org/${name}`);
+    //call the registry API to get package metadata
+    const metaRes = await fetch(`https://registry.npmjs.org/${name}`);
+    const metaData = await metaRes.json() as any;
+    
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const downloadRes = await axios.get(`https://api.npmjs.org/downloads/point/last-week/${name}`);
-
-    const maintainers = metaRes.data.maintainers?.length || 0;
-    const downloads = downloadRes.data.downloads || 0;
-
+    
+    const downloadRes = await fetch(
+      `https://api.npmjs.org/downloads/point/last-week/${name}`
+    );
+    const downloadData = await downloadRes.json() as any;
+    
+    const maintainers = metaData.maintainers?.length || 0;
+    const downloads = downloadData.downloads || 0;
+    
     const isLowDownloads = downloads < 100;
     const isLowMaintainer = maintainers <= 1 && downloads < 1000;
-
+    
     if (isLowDownloads || isLowMaintainer) {
       return {
         name,

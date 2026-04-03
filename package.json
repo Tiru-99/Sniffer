@@ -17,9 +17,6 @@
   "peerDependencies": {
     "typescript": "^5"
   },
-  "dependencies": {
-    "axios": "^1.13.6",
-    "ora": "^9.3.0"
-  },
+  "dependencies": {},
   "version": "1.0.4"
 }
